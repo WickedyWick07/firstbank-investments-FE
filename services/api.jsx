@@ -4,14 +4,11 @@ console.log('Creating axios instance with URL:', import.meta.env.VITE_API_URL);
 
 
 // Just use the Heroku URL directly
-const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    }
-});
-
-// Request interceptor for authentication
+const axiosInstance = axios.create({
+    baseURL: '/api',  // Remove the full Heroku URL
+    headers: { 'Content-Type': 'application/json' }
+  });
+  // Request interceptor for authentication
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
