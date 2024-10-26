@@ -20,7 +20,11 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
+
+    
     try {
+      console.log('API URL being used:', API_URL);
+
       const response = await axios.post(`${API_URL}login/`, { email, password });
       const { access, refresh } = response.data;
 
@@ -44,6 +48,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (username, first_name, last_name, email, password) => {
     try {
+      console.log('API URL being used:', API_URL);
       const response = await axios.post(`${API_URL}register/`, { username, first_name, last_name, email, password });
       const { access, refresh } = response.data;
 

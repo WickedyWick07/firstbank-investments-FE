@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+console.log('Creating axios instance with URL:', import.meta.env.VITE_API_URL);
+
+
 // Just use the Heroku URL directly
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
