@@ -1,14 +1,17 @@
 import axios from 'axios';
 
+// Just use the Heroku URL directly
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL 
+    baseURL: import.meta.env.VITE_API_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    }
 });
 
-// Request interceptor for attaching the access token
+// Request interceptor for authentication
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('access_token');
-        console.log('Access Token:', token); // Debugging line
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -19,40 +22,35 @@ api.interceptors.request.use(
     }
 );
 
-// Response interceptor for handling token refresh
+// Response interceptor for token refresh
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
 
-        // Check if the error response status is 401 and the error has not been retried yet
-        if (error.response && error.response.status === 401 && !originalRequest._retry) {
+        if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
                 const refreshToken = localStorage.getItem('refresh_token');
-                
-                // If no refresh token is available, log out or handle appropriately
                 if (!refreshToken) {
-                    // Redirect to login or display a message
                     window.location.href = '/login';
                     return Promise.reject(error);
                 }
 
-                // Attempt to get a new access token using the refresh token
-                const response = await axios.post(`${process.env.REACT_APP_API_URL}/token/refresh/`, {
+                // Use your Heroku URL for token refresh
+                const response = await axios.post(`${import.meta.env.VITE_API_URL}token/refresh/`, {
                     refresh: refreshToken,
                 });
 
-                // Update the access token in localStorage and in the request headers
                 localStorage.setItem('access_token', response.data.access);
                 originalRequest.headers['Authorization'] = `Bearer ${response.data.access}`;
 
-                // Retry the original request with the new access token
                 return api(originalRequest);
             } catch (refreshError) {
                 console.error('Refresh token is invalid or expired', refreshError);
-                // Handle logout or redirection to login here
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
                 window.location.href = '/login';
                 return Promise.reject(refreshError);
             }

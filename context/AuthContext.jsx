@@ -3,7 +3,7 @@ import api from '../services/api'; // Ensure this is the axios instance with int
 import axios from 'axios';
 
 const AuthContext = createContext(null);
-const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:8000/api/'; // Use environment variable
+const API_URL = import.meta.env.REACT_APP_API_URL  // Use environment variable
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
